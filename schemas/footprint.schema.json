@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beijing-rail-footprint.local/schemas/footprint.schema.json",
+  "title": "北京轨道交通足迹用户文件",
+  "description": "保存用户已乘区间及实际上下车、站内换乘或出站换乘的车站。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "datasetVersion",
+    "scoringVersion",
+    "title",
+    "selectedSegmentIds",
+    "stationVisits",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "$ref": "#/$defs/semver" },
+    "datasetVersion": { "$ref": "#/$defs/datasetVersion" },
+    "scoringVersion": { "$ref": "#/$defs/semver" },
+    "appVersion": { "$ref": "#/$defs/semver" },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "selectedSegmentIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "stationVisits": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stationVisit" }
+    },
+    "createdAt": { "$ref": "#/$defs/isoDateTime" },
+    "updatedAt": { "$ref": "#/$defs/isoDateTime" },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "datasetVersion": {
+      "type": "string",
+      "pattern": "^[0-9]{4}\\.(0[1-9]|1[0-2])\\.(0[1-9]|[12][0-9]|3[01])\\.[1-9][0-9]*$"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stationVisit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stationId", "visitTypes"],
+      "properties": {
+        "stationId": { "$ref": "#/$defs/id" },
+        "visitTypes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "board_or_alight",
+              "in_station_transfer",
+              "out_of_station_transfer"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

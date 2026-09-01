@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beijing-rail-footprint.local/schemas/network.schema.json",
+  "title": "北京轨道交通足迹地图线网数据集",
+  "description": "描述指定有效日期的线路、物理车站、线路站点、运营区间、换乘关系、贯通运营关系和示意图布局。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "sources",
+    "districts",
+    "stations",
+    "lines",
+    "lineStations",
+    "segments",
+    "transferLinks",
+    "throughServices",
+    "diagram"
+  ],
+  "properties": {
+    "meta": { "$ref": "#/$defs/datasetMeta" },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "districts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/district" }
+    },
+    "stations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/station" }
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/line" }
+    },
+    "lineStations": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/lineStation" }
+    },
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/segment" }
+    },
+    "transferLinks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/transferLink" }
+    },
+    "throughServices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/throughService" }
+    },
+    "diagram": { "$ref": "#/$defs/diagram" }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "isoDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "datasetVersion": {
+      "type": "string",
+      "pattern": "^[0-9]{4}\\.(0[1-9]|1[0-2])\\.(0[1-9]|[12][0-9]|3[01])\\.[1-9][0-9]*$"
+    },
+    "dataStatus": {
+      "enum": ["open", "temporarily_closed", "planned"]
+    },
+    "sourceRefList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "datasetMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "datasetVersion",
+        "effectiveDate",
+        "generatedAt",
+        "scope"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/semver" },
+        "datasetVersion": { "$ref": "#/$defs/datasetVersion" },
+        "effectiveDate": { "$ref": "#/$defs/isoDate" },
+        "generatedAt": { "$ref": "#/$defs/isoDateTime" },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["description", "includedServiceTypes", "excludeSuburbanRail"],
+          "properties": {
+            "description": { "type": "string", "minLength": 1 },
+            "includedServiceTypes": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "enum": ["metro", "airport", "tram"] },
+              "allOf": [
+                { "contains": { "const": "metro" } },
+                { "contains": { "const": "airport" } },
+                { "contains": { "const": "tram" } }
+              ]
+            },
+            "excludeSuburbanRail": { "const": true },
+            "officialMapAsScopeReference": { "type": "boolean", "default": true }
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "type", "retrievedAt"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["official_map", "official_website", "wikipedia", "openstreetmap", "open_dataset", "manual_verification"]
+        },
+        "url": { "type": "string", "format": "uri" },
+        "retrievedAt": { "$ref": "#/$defs/isoDate" },
+        "effectiveDate": { "$ref": "#/$defs/isoDate" },
+        "license": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "district": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "provinceNameZh"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "nameEn": { "type": "string" },
+        "provinceNameZh": { "type": "string", "minLength": 1 }
+      }
+    },
+    "coordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lat", "lng", "crs"],
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lng": { "type": "number", "minimum": -180, "maximum": 180 },
+        "crs": { "enum": ["WGS84", "GCJ02"] }
+      }
+    },
+    "station": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "districtIds", "status", "sourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "nameEn": { "type": "string" },
+        "districtIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "coordinate": { "$ref": "#/$defs/coordinate" },
+        "status": { "$ref": "#/$defs/dataStatus" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "statisticsPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["includeInStationCoverage", "includeInMileage", "includeInCompletion"],
+      "properties": {
+        "includeInStationCoverage": { "type": "boolean" },
+        "includeInMileage": { "type": "boolean" },
+        "includeInCompletion": { "type": "boolean" },
+        "specialRule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "color", "serviceType", "topology", "status", "statisticsPolicy", "sourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "nameEn": { "type": "string" },
+        "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "serviceType": { "enum": ["metro", "airport", "tram"] },
+        "topology": { "enum": ["linear", "circular", "branched"] },
+        "status": { "$ref": "#/$defs/dataStatus" },
+        "statisticsPolicy": { "$ref": "#/$defs/statisticsPolicy" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "lineStation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "lineId", "stationId", "status", "sourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "lineId": { "$ref": "#/$defs/id" },
+        "stationId": { "$ref": "#/$defs/id" },
+        "displayOrder": { "type": "integer", "minimum": 0 },
+        "openedAt": { "$ref": "#/$defs/isoDate" },
+        "status": { "$ref": "#/$defs/dataStatus" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "lineId",
+        "fromLineStationId",
+        "toLineStationId",
+        "distanceM",
+        "distanceSourceType",
+        "status",
+        "sourceIds"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "lineId": { "$ref": "#/$defs/id" },
+        "fromLineStationId": { "$ref": "#/$defs/id" },
+        "toLineStationId": { "$ref": "#/$defs/id" },
+        "distanceM": { "type": "number", "minimum": 0.5, "multipleOf": 0.5 },
+        "directionalDistancesM": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "distanceCalculation": { "enum": ["direct", "directional_average", "special_combination"] },
+        "distanceSourceType": { "enum": ["official", "published", "wikipedia"] },
+        "status": { "$ref": "#/$defs/dataStatus" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "transferLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "fromLineStationId", "toLineStationId", "type", "sourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "fromLineStationId": { "$ref": "#/$defs/id" },
+        "toLineStationId": { "$ref": "#/$defs/id" },
+        "type": { "enum": ["in_station", "out_of_station"] },
+        "notes": { "type": "string" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "throughService": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "lineIds", "connectionStationId", "sourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "lineIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "connectionStationId": { "$ref": "#/$defs/id" },
+        "sourceIds": { "$ref": "#/$defs/sourceRefList" }
+      }
+    },
+    "diagramNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stationId", "x", "y"],
+      "properties": {
+        "stationId": { "$ref": "#/$defs/id" },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "labelX": { "type": "number" },
+        "labelY": { "type": "number" },
+        "labelAnchor": { "enum": ["start", "middle", "end"] }
+      }
+    },
+    "diagramSegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["segmentId", "path"],
+      "properties": {
+        "segmentId": { "$ref": "#/$defs/id" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "diagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "nodes", "segments"],
+      "properties": {
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/diagramNode" }
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/diagramSegment" }
+        }
+      }
+    }
+  }
+}

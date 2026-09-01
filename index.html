@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f1e9">
+  <title>北京轨道交通足迹地图</title>
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">BEIJING RAIL TRANSIT</p>
+        <h1>足迹地图</h1>
+      </div>
+      <div class="dataset-status" id="dataset-status" aria-live="polite" hidden>
+        <span class="status-dot"></span>
+        <span>正在读取线网数据</span>
+      </div>
+    </header>
+
+    <section class="map-panel" aria-label="北京轨道交通全网地图">
+      <div class="map-summary" id="map-summary" hidden>
+        <span><strong id="line-count">—</strong> 条线路</span>
+        <span><strong id="station-count">—</strong> 座车站</span>
+        <span>数据截至 <strong id="effective-date">—</strong></span>
+      </div>
+
+      <div class="map-actions" aria-label="地图控制">
+        <button type="button" id="zoom-in" title="放大" aria-label="放大地图">＋</button>
+        <button type="button" id="zoom-out" title="缩小" aria-label="缩小地图">−</button>
+        <button type="button" id="reset-view" class="reset-button">复位</button>
+        <button type="button" id="interaction-mode" class="mode-button" aria-pressed="false" title="开启后可点选被车站遮挡的区间">区间点选</button>
+      </div>
+      <div class="symbol-legend" aria-label="车站图例">
+        <span><i class="legend-station ordinary"></i>普通车站</span>
+        <span><i class="legend-station transfer"></i>站内换乘</span>
+        <span><i class="legend-station out-transfer"></i>出站换乘</span>
+      </div>
+
+      <aside class="statistics-panel" id="statistics-panel" aria-label="实时统计" hidden>
+        <section class="file-controls" aria-label="足迹文件管理">
+          <label>当前足迹<select id="footprint-select"></select></label>
+          <div><button id="new-footprint" type="button">新建</button><button id="rename-footprint" type="button">重命名</button><button id="copy-footprint" type="button">复制</button><button id="delete-footprint" type="button">删除</button></div>
+          <div><button id="import-json" type="button">导入 JSON</button><button id="export-json" type="button">导出 JSON</button><button id="export-svg" type="button">SVG</button><button id="export-png" type="button">PNG</button><button id="export-excel" type="button">Excel 报告</button></div>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+          <p id="file-status" role="status" aria-live="polite">已启用自动保存</p>
+        </section>
+        <section class="edit-controls" aria-label="足迹编辑">
+          <div><button id="undo-action" type="button" disabled title="撤销（Ctrl+Z）">撤销</button><button id="redo-action" type="button" disabled title="重做（Ctrl+Y）">重做</button><button id="clear-footprint" type="button">清空足迹</button></div>
+          <label>整线批量操作<select id="bulk-line-select"></select></label>
+          <div><button id="select-line" type="button">整线设为已乘</button><button id="unselect-line" type="button">整线设为未乘</button></div>
+        </section>
+        <div class="stats-heading"><span>实时统计</span><strong><b id="stat-score">0</b> 分</strong></div>
+        <p class="score-detail" id="score-detail">—</p>
+        <div class="mileage-stat"><span>已乘精确里程</span><strong id="stat-mileage">0.000 km</strong><small id="rate-mileage">0.0%</small></div>
+        <div class="coverage-grid">
+          <span>车站<strong id="stat-stations">0/424</strong><small id="rate-stations">0.0%</small></span>
+          <span>区间<strong id="stat-segments">0/516</strong><small id="rate-segments">0.0%</small></span>
+          <span>参与线路<strong id="stat-lines">0/30</strong><small id="rate-lines">0.0%</small></span>
+          <span>完成线路<strong id="stat-complete-lines">0/30</strong><small id="rate-complete">0.0%</small></span>
+          <span>行政区<strong id="stat-districts">0/—</strong><small id="rate-districts">0.0%</small></span>
+          <span>换乘站<strong id="stat-transfers">0/0</strong><small id="rate-transfers">0.0%</small></span>
+        </div>
+        <div class="stats-notes"><p><span>覆盖区间最多的线路</span><strong id="stat-top-line">—</strong></p><p><span>到访车站最多的线路</span><strong id="stat-top-station-line">—</strong></p><p><span>到访车站最多的行政区</span><strong id="stat-top-district">—</strong></p></div>
+        <details><summary>地理极限</summary><div class="extreme-grid"><span>北<strong id="extreme-north">—</strong></span><span>南<strong id="extreme-south">—</strong></span><span>东<strong id="extreme-east">—</strong></span><span>西<strong id="extreme-west">—</strong></span><span>南北跨度<strong id="span-ns">—</strong></span><span>东西跨度<strong id="span-ew">—</strong></span></div></details>
+        <details class="stats-detail"><summary>各线路统计</summary><label>排序<select id="line-stats-sort"><option value="station-count">到访车站数</option><option value="station-rate">车站比例</option><option value="segment-count">已乘区间数</option><option value="segment-rate">区间比例</option><option value="name">线路名称</option></select></label><div id="line-stats-list" class="stats-list"></div></details>
+        <details class="stats-detail"><summary>各行政区统计</summary><label>排序<select id="district-stats-sort"><option value="count">到访车站数</option><option value="rate">到访比例</option><option value="name">行政区名称</option></select></label><div id="district-stats-list" class="stats-list"></div></details>
+      </aside>
+
+      <div class="map-stage" id="map-stage">
+        <svg id="network-map" role="img" aria-label="北京轨道交通线路图">
+          <g id="map-viewport">
+            <g id="artwork-layer"></g>
+            <g id="segment-layer"></g>
+            <g id="station-layer"></g>
+            <g id="easter-egg-layer" aria-label="已解锁彩蛋"></g>
+            <g id="interaction-layer"></g>
+          </g>
+        </svg>
+        <div class="loading-state" id="loading-state">
+          <span class="loading-mark"></span>
+          <p>正在装载全网数据…</p>
+        </div>
+        <div class="map-tooltip" id="map-tooltip" hidden></div>
+      </div>
+
+      <footer class="map-footer">
+        <span>滚轮缩放 · 按住拖动 · 双击放大 · 可切换区间点选</span>
+        <a href="./notices.html">数据来源与第三方声明</a>
+        <span id="zoom-readout">100%</span>
+      </footer>
+    </section>
+  </main>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

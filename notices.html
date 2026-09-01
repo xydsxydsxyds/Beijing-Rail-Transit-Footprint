@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f1e9">
+  <title>数据来源与第三方声明｜北京轨道交通足迹地图</title>
+  <link rel="stylesheet" href="./src/notices.css">
+</head>
+<body>
+  <main class="notice-shell">
+    <nav aria-label="页面导航"><a href="./">← 返回足迹地图</a></nav>
+    <header>
+      <p class="eyebrow">BEIJING RAIL TRANSIT FOOTPRINT</p>
+      <h1>数据来源与第三方声明</h1>
+      <p class="lead">本页面说明线网业务数据、坐标、字体和图形资源的来源及许可状态。项目数据截至 2026-06-30。</p>
+    </header>
+
+    <section>
+      <h2>中文维基百科</h2>
+      <p>线路、车站、行政区、运营状态、站间距和部分坐标数据由中文维基百科相关词条抽取并标准化。具体词条、抓取日期和字段说明保存在 <code>data/network.json</code> 的 <code>sources</code> 字段中。</p>
+      <p>原始文本由维基百科贡献者提供，采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hans" rel="license external">知识共享 署名—相同方式共享 4.0 国际许可协议</a>。本项目对数据进行了结构化抽取、稳定 ID 统一、贯通线路处理、换乘合并和特殊里程规则处理。</p>
+    </section>
+
+    <section>
+      <h2>OpenStreetMap</h2>
+      <p>部分车站坐标及坐标审计使用 OpenStreetMap 数据：© OpenStreetMap contributors。</p>
+      <ul>
+        <li><a href="https://www.openstreetmap.org/copyright" rel="external">OpenStreetMap 版权与署名说明</a></li>
+        <li><a href="https://opendatacommons.org/licenses/odbl/1-0/" rel="license external">Open Database License 1.0</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Noto Sans SC</h2>
+      <p>项目包含 Noto Sans SC Regular 字体，按 SIL Open Font License 1.1 分发。许可证全文随项目保存在 <a href="./assets/fonts/OFL-1.1.txt">OFL-1.1.txt</a>。</p>
+      <p><a href="https://github.com/notofonts/noto-cjk" rel="external">Noto CJK 项目主页</a> · <a href="https://openfontlicense.org/" rel="license external">SIL Open Font License</a></p>
+    </section>
+
+    <section>
+      <h2>软件依赖</h2>
+      <p>开发和数据校验使用 Ajv、ajv-formats 与 Cheerio，均按各自 MIT 许可证使用。准确版本和传递依赖记录见 <code>package-lock.json</code>。</p>
+    </section>
+
+    <section>
+      <h2>项目原创代码</h2>
+      <p>除另有说明外，本项目作者原创的软件代码采用 <a href="https://opensource.org/license/mit" rel="license external">MIT License</a>，许可证全文见仓库根目录的 <code>LICENSE</code>。该许可不适用于本页面列出的第三方数据、字体、线路图布局、图形素材及其衍生内容。</p>
+    </section>
+
+    <section class="warning">
+      <h2>线路图来源与权利说明</h2>
+      <p>交互线路布局参考<a href="https://map.bjsubway.com/" rel="external">北京地铁官方线路图</a>，并经过交互化、路径关联和视觉状态改造。原线路图及相关图形的权利归原权利人所有，本项目不主张取得其所有权。</p>
+    </section>
+
+    <section>
+      <h2>非官方产品与免责声明</h2>
+      <p>本项目不是北京地铁、京港地铁、北京轨道运营公司等运营方或政府部门的官方产品，也不表示上述机构对本项目的认可或背书。</p>
+      <p>本工具用于个人足迹记录和数据展示，不作为票价、运营安排、工程测量、实时出行或安全决策依据。请以运营单位最新公告为准。</p>
+    </section>
+
+    <footer>
+      <a href="/">返回足迹地图</a>
+      <span>数据集版本 2026.06.30.1</span>
+    </footer>
+  </main>
+</body>
+</html>

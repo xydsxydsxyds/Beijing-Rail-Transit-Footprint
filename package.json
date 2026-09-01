@@ -1,0 +1,32 @@
+{
+  "name": "beijing-rail-transit-footprint",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve-web.mjs",
+    "build:sample": "node scripts/build-sample-data.mjs",
+    "validate:manifest": "node scripts/validate-line-manifest.mjs",
+    "download:lines": "node scripts/download-wikipedia-snapshots.mjs",
+    "download:lines:current": "node scripts/download-wikipedia-snapshots.mjs --current",
+    "audit:lines": "node scripts/audit-wikipedia-line-tables.mjs",
+    "extract:network": "node scripts/extract-network-source.mjs",
+    "fetch:network-coordinates": "node scripts/fetch-network-coordinates.mjs",
+    "fetch:osm-coordinates": "node scripts/fetch-openstreetmap-coordinates.mjs",
+    "validate:hotspots": "node scripts/validate-diagram-hotspots.mjs",
+    "capture:official-svg": "node scripts/capture-bjsubway-svg.mjs",
+    "extract:official-svg": "node scripts/extract-bjsubway-svg.mjs",
+    "link:official-paths": "node scripts/link-official-segment-paths.mjs",
+    "build:official-hotspots": "npm run capture:official-svg && npm run extract:official-svg",
+    "build:network": "node scripts/build-network-data.mjs",
+    "extract:wikipedia": "node scripts/extract-wikipedia-lines.mjs --output data/raw/wikipedia/extracted-lines.json",
+    "validate:data": "node scripts/validate-data.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "cheerio": "^1.1.2"
+  }
+}

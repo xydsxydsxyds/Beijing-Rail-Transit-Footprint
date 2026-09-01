@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beijing-rail-footprint.local/schemas/line-manifest.schema.json",
+  "title": "北京轨道交通全线路来源清单",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "manifestVersion", "effectiveDate", "scope", "lines", "throughServices"],
+  "properties": {
+    "schemaVersion": { "$ref": "#/$defs/semver" },
+    "manifestVersion": { "$ref": "#/$defs/datasetVersion" },
+    "effectiveDate": { "type": "string", "format": "date" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference", "includedServiceTypes", "excludedServiceTypes"],
+      "properties": {
+        "reference": { "type": "string", "minLength": 1 },
+        "includedServiceTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["metro", "airport", "tram"] }
+        },
+        "excludedServiceTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["suburban_rail"] }
+        }
+      }
+    },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lineEntry" }
+    },
+    "throughServices": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/throughService" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "datasetVersion": { "type": "string", "pattern": "^[0-9]{4}\\.(0[1-9]|1[0-2])\\.(0[1-9]|[12][0-9]|3[01])\\.[1-9][0-9]*$" },
+    "statisticsPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["includeInStationCoverage", "includeInMileage", "includeInCompletion"],
+      "properties": {
+        "includeInStationCoverage": { "type": "boolean" },
+        "includeInMileage": { "type": "boolean" },
+        "includeInCompletion": { "type": "boolean" },
+        "specialRule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "lineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "serviceType", "topology", "color", "wikipediaPageTitle", "snapshotFile", "statisticsPolicy"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "serviceType": { "enum": ["metro", "airport", "tram"] },
+        "topology": { "enum": ["linear", "circular", "branched", "special"] },
+        "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "wikipediaPageTitle": { "type": "string", "minLength": 1 },
+        "snapshotFile": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*\\.html$" },
+        "statisticsPolicy": { "$ref": "#/$defs/statisticsPolicy" },
+        "notes": { "type": "string" }
+      }
+    },
+    "throughService": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nameZh", "lineIds", "connectionStationNameZh"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "nameZh": { "type": "string", "minLength": 1 },
+        "lineIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "connectionStationNameZh": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
